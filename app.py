@@ -6,33 +6,27 @@ import torch
 import torch.nn as nn
 from torchvision import models
 
+
 @st.cache_resource
 def load_my_model():
-    # 1. Initialize the architecture without any default weights
+    # 1. Initialize the architecture (THIS defines 'model')
     model = models.resnet50(weights=None)
     
-    # 2. Match the final layer to your training classes (e.g., if you have 3 classes)
+    # 2. Modify the final layer to match YOUR number of classes (e.g., 3)
     num_ftrs = model.fc.in_features
-    # CHANGE THIS NUMBER to match your total disease classes
     model.fc = nn.Linear(num_ftrs, 3) 
     
-    # 3. Load your specific saved weights
-    checkpoint = torch.load('plant_model.pth', map_location=torch.device('cpu'))
+    # 3. Load the weights from your file
+    checkpoint = torch.load('plant_model.pth', map_location='cpu')
     
-    # Handle both full models and state_dicts
-    if isinstance(checkpoint, dict):
-        model.load_state_dict(checkpoint)
-    else:
-        model = checkpoint # In case you saved the whole model object
-        
+    # 4. Fill the model with weights
+    model.load_state_dict(checkpoint, strict=False)
     model.eval()
     return model
 
-
-model.load_state_dict(checkpoint, strict=False)
-
-
+# 5. Call the function to actually create the variable for the rest of the script
 model = load_my_model()
+
 
 # Define your class names (must match your model's output)
 CLASS_NAMES = ['healthy', 'infected'] 
@@ -61,6 +55,7 @@ if uploaded_file is not None:
         
         result = CLASS_NAMES[predicted_idx.item()]
         st.success(f"Prediction: {result}")
+
 
 
 
