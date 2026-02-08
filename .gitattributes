@@ -1,1 +1,2 @@
 D:/plant_disease_detection/plant_model.pth filter=lfs diff=lfs merge=lfs -text
+D:/plant_disease_detection/plant_model.pth filter=lfs diff=lfs merge=lfs -text
