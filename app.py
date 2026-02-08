@@ -11,7 +11,7 @@ def load_my_model():
 model = load_my_model()
 
 # Define your class names (must match your model's output)
-CLASS_NAMES = ['Healthy', 'Infected'] 
+CLASS_NAMES = ['healthy', 'infected'] 
 
 st.title("Crop Disease Detector")
 st.write("Upload a leaf image to see the diagnosis.")
@@ -34,3 +34,4 @@ if uploaded_file is not None:
         confidence = np.max(predictions) * 100
         
         st.success(f"Prediction: {result} ({confidence:.2f}%)")
+
