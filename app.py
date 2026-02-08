@@ -37,16 +37,24 @@ if uploaded_file is not None:
     st.image(image, caption='Uploaded Leaf', use_column_width=True)
     
     # Preprocessing (adjust size based on your model's input)
-    img = image.resize((224, 224)) 
-    img_array = np.expand_dims(tf.keras.preprocessing.image.img_to_array(img), 0)
-    
-    # Predict
-    if st.button('Analyze'):
-        predictions = model.predict(img_array)
-        result = CLASS_NAMES[np.argmax(predictions)]
-        confidence = np.max(predictions) * 100
+   img = image.resize((224, 224)) 
+img_array = np.array(img).astype(np.float32) / 255.0  # Normalize to [0, 1]
+img_tensor = torch.from_numpy(img_array).permute(2, 0, 1).unsqueeze(0) # Change to (Batch, Channel, H, W)
+
+# 2. Predict using PyTorch
+if st.button('Analyze'):
+    with torch.no_grad(): # Disable gradient calculation for speed
+        outputs = model(img_tensor)
+        # Get the index of the highest value
+        _, predicted_idx = torch.max(outputs, 1)
         
-        st.success(f"Prediction: {result} ({confidence:.2f}%)")
+    result = CLASS_NAMES[predicted_idx.item()]
+    
+    # Optional: Calculate confidence (Softmax)
+    probabilities = torch.nn.functional.softmax(outputs, dim=1)
+    confidence = probabilities[0][predicted_idx].item() * 100
+    
+    st.success(f"Prediction: {result} ({confidence:.2f}%)")
 
 
 
