@@ -8,12 +8,12 @@ import torch
 @st.cache_resource
 def load_my_model():
    model = models.resnet50(pretrained=False)
-    num_features = model.fc.in_features
-    model.fc = torch.nn.Linear(num_features, 2)
-    model.load_state_dict(torch.load(plant_model.pth))
-    model = model.to(device)
-    model.eval() sets it to inference mode
-        return model
+   num_features = model.fc.in_features
+   model.fc = torch.nn.Linear(num_features, 2)
+   model.load_state_dict(torch.load(plant_model.pth))
+   model = model.to(device)
+   model.eval() sets it to inference mode
+return model
 
 
 
@@ -46,6 +46,7 @@ if uploaded_file is not None:
         
         result = CLASS_NAMES[predicted_idx.item()]
         st.success(f"Prediction: {result}")
+
 
 
 
