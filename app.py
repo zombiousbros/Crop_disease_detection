@@ -13,7 +13,7 @@ def load_my_model():
    model.load_state_dict(torch.load(plant_model.pth))
    model = model.to(device)
    model.eval()
-return model
+   return model
 
 
 
@@ -46,6 +46,7 @@ if uploaded_file is not None:
         
         result = CLASS_NAMES[predicted_idx.item()]
         st.success(f"Prediction: {result}")
+
 
 
 
