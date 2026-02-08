@@ -29,6 +29,7 @@ def load_my_model():
     return model
 
 
+model.load_state_dict(checkpoint, strict=False)
 
 
 model = load_my_model()
@@ -60,6 +61,7 @@ if uploaded_file is not None:
         
         result = CLASS_NAMES[predicted_idx.item()]
         st.success(f"Prediction: {result}")
+
 
 
 
