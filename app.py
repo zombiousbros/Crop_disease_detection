@@ -6,9 +6,19 @@ import torch
 # Replace the load_my_model function with this:
 @st.cache_resource
 def load_my_model():
-    model = torch.load('plant_model.pth', map_location=torch.device('cpu'))
-    model.eval()
+    # Load the file
+    checkpoint = torch.load('plant_model.pth', map_location=torch.device('cpu'))
+    
+    # If it's a dictionary (state_dict), you need the model class defined first
+    # For now, let's assume it's the full model object
+    if isinstance(checkpoint, dict):
+        st.error("The .pth file is a state_dict. You must define the model architecture in app.py before loading.")
+        return None
+    
+    model = checkpoint
+    model.eval() # This sets it to inference mode
     return model
+
 
 
 model = load_my_model()
@@ -37,5 +47,6 @@ if uploaded_file is not None:
         confidence = np.max(predictions) * 100
         
         st.success(f"Prediction: {result} ({confidence:.2f}%)")
+
 
 
