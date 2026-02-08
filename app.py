@@ -3,17 +3,31 @@ import tensorflow as tf
 from PIL import Image
 import numpy as np
 import torch
-# Replace the load_my_model function with this:
+import torch.nn as nn
+from torchvision import models
 
 @st.cache_resource
 def load_my_model():
-   model = models.resnet50(pretrained=False)
-   num_features = model.fc.in_features
-   model.fc = torch.nn.Linear(num_features, 2)
-   model.load_state_dict(torch.load(plant_model.pth))
-   model = model.to(device)
-   model.eval()
-   return model
+    # 1. Initialize the architecture without any default weights
+    model = models.resnet50(weights=None)
+    
+    # 2. Match the final layer to your training classes (e.g., if you have 3 classes)
+    num_ftrs = model.fc.in_features
+    # CHANGE THIS NUMBER to match your total disease classes
+    model.fc = nn.Linear(num_ftrs, 3) 
+    
+    # 3. Load your specific saved weights
+    checkpoint = torch.load('plant_model.pth', map_location=torch.device('cpu'))
+    
+    # Handle both full models and state_dicts
+    if isinstance(checkpoint, dict):
+        model.load_state_dict(checkpoint)
+    else:
+        model = checkpoint # In case you saved the whole model object
+        
+    model.eval()
+    return model
+
 
 
 
@@ -46,6 +60,7 @@ if uploaded_file is not None:
         
         result = CLASS_NAMES[predicted_idx.item()]
         st.success(f"Prediction: {result}")
+
 
 
 
