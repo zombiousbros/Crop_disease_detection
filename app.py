@@ -4,20 +4,16 @@ from PIL import Image
 import numpy as np
 import torch
 # Replace the load_my_model function with this:
+
 @st.cache_resource
 def load_my_model():
-    # Load the file
-    checkpoint = torch.load('plant_model.pth', map_location=torch.device('cpu'))
-    
-    # If it's a dictionary (state_dict), you need the model class defined first
-    # For now, let's assume it's the full model object
-    if isinstance(checkpoint, dict):
-        st.error("The .pth file is a state_dict. You must define the model architecture in app.py before loading.")
-        return None
-    
-    model = checkpoint
-    model.eval() # This sets it to inference mode
-    return model
+   model = models.resnet50(pretrained=False)
+    num_features = model.fc.in_features
+    model.fc = torch.nn.Linear(num_features, 2)
+    model.load_state_dict(torch.load(plant_model.pth))
+    model = model.to(device)
+    model.eval() sets it to inference mode
+        return model
 
 
 
@@ -50,6 +46,7 @@ if uploaded_file is not None:
         
         result = CLASS_NAMES[predicted_idx.item()]
         st.success(f"Prediction: {result}")
+
 
 
 
