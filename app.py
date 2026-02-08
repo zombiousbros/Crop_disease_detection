@@ -2,11 +2,14 @@ import streamlit as st
 import tensorflow as tf
 from PIL import Image
 import numpy as np
-
-# Load your model (adjust the path to your file)
+import torch
+# Replace the load_my_model function with this:
 @st.cache_resource
 def load_my_model():
-    return tf.keras.models.load_model('plant_model.pth')
+    model = torch.load('plant_model.pth', map_location=torch.device('cpu'))
+    model.eval()
+    return model
+
 
 model = load_my_model()
 
@@ -34,4 +37,5 @@ if uploaded_file is not None:
         confidence = np.max(predictions) * 100
         
         st.success(f"Prediction: {result} ({confidence:.2f}%)")
+
 
