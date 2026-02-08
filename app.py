@@ -32,29 +32,25 @@ st.write("Upload a leaf image to see the diagnosis.")
 uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
 
 if uploaded_file is not None:
-    # Display the image
+    # 1. Display the image
     image = Image.open(uploaded_file)
-    st.image(image, caption='Uploaded Leaf', use_column_width=True)
+    st.image(image, caption='Uploaded Leaf', use_container_width=True)
     
-    # Preprocessing (adjust size based on your model's input)
-   img = image.resize((224, 224)) 
-img_array = np.array(img).astype(np.float32) / 255.0  # Normalize to [0, 1]
-img_tensor = torch.from_numpy(img_array).permute(2, 0, 1).unsqueeze(0) # Change to (Batch, Channel, H, W)
+    # 2. Preprocessing for PyTorch (Line 40 starts here)
+    img = image.resize((224, 224)) 
+    img_array = np.array(img).astype(np.float32) / 255.0
+    # Convert to Tensor and change shape to (Batch, Channel, Height, Width)
+    img_tensor = torch.from_numpy(img_array).permute(2, 0, 1).unsqueeze(0)
 
-# 2. Predict using PyTorch
-if st.button('Analyze'):
-    with torch.no_grad(): # Disable gradient calculation for speed
-        outputs = model(img_tensor)
-        # Get the index of the highest value
-        _, predicted_idx = torch.max(outputs, 1)
+    # 3. Predict using PyTorch
+    if st.button('Analyze'):
+        with torch.no_grad():
+            outputs = model(img_tensor)
+            _, predicted_idx = torch.max(outputs, 1)
         
-    result = CLASS_NAMES[predicted_idx.item()]
-    
-    # Optional: Calculate confidence (Softmax)
-    probabilities = torch.nn.functional.softmax(outputs, dim=1)
-    confidence = probabilities[0][predicted_idx].item() * 100
-    
-    st.success(f"Prediction: {result} ({confidence:.2f}%)")
+        result = CLASS_NAMES[predicted_idx.item()]
+        st.success(f"Prediction: {result}")
+
 
 
 
